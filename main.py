@@ -9,29 +9,31 @@ Colors = {
 }
 
 class Cell:
-  def __init__(self, on=0, d=0, color=None, color_code=None):
+  def __init__(self, on=0, dx=0, dy=0,
+    color=None, color_code=None):
     self.on = on
-    self.d = d
+    self.dx = dx
+    self.dy = dy
     self.color = color
     self.color_code = color_code or Colors.get(color) or Colors['white']
 
 def time_step(space):
-  out = [None] * len(space)
-  for i in range(len(out)):
-    out[i] = Cell()
-  for i,c in enumerate(space):
-    if c.on:
-      dest = i + c.d
-      dest = dest - 20 if dest > len(space) else dest
-      out[dest] = Cell(**c.__dict__)
+  out = [[Cell() for _ in range(20)] for _ in range(20)]
+
+  for i,l in enumerate(space):
+    for j,c in enumerate(l):
+      if c.on:
+        dest_x = min(i + c.dx, len(out) - 1)
+        dest_y = min(j + c.dy, len(out) - 1)
+        out[dest_x][dest_y] = Cell(**c.__dict__)
   return out
 
 def print_space(space):
-  for i,c in enumerate(space):
-    if i and not i%20: print()
-    c_out = " O " if c.on else " - "
-    print(c.color_code + c_out, end="")
-  print()
+  for l in space:
+    for c in l:
+      c_out = " O " if c.on else " - "
+      print(c.color_code + c_out, end="")
+    print(Colors['white'])
 
 def animate(space):
   while(True):
@@ -41,9 +43,9 @@ def animate(space):
     print("\033[21A\r")
 
 conf = json.load(open(sys.argv[1]))
-space = [None] * 400
-for i in range(len(space)):
-  c = dict(conf.get(str(i)) or {})
-  space[i] = Cell(**c)
+space = [[Cell() for _ in range(20)] for _ in range(20)]
+for key, val in conf.items():
+  i, j = [int(x) for x in key.split(", ")]
+  space[i][j] = Cell(**val)
 
 animate(space)
