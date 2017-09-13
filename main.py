@@ -1,9 +1,9 @@
-import sys
-import json
+import sys, json
 
 class Cell:
-  def __init__(self, _on=None):
-    self.on = 0 if _on==None else _on 
+  def __init__(self, on=0, d=0):
+    self.on = on
+    self.d = d
 
 def print_space(space):
   for i,c in enumerate(space):
@@ -15,6 +15,7 @@ def print_space(space):
 conf = json.load(open(sys.argv[1]))
 space = [None] * 400
 for i in range(len(space)):
-  space[i] = Cell(conf.get(str(i)))
+  c = dict(conf.get(str(i)) or {})
+  space[i] = Cell(**c)
 
 print_space(space)
