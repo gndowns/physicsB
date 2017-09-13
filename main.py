@@ -20,7 +20,7 @@ def time_step(space):
   for i,c in enumerate(space):
     if c.on:
       dest = i + c.d
-      if dest > len(space): dest = dest-20
+      dest = dest - 20 if dest > len(space) else dest
       out[dest] = Cell(**c.__dict__)
   return out
 
