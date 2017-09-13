@@ -29,8 +29,9 @@ def time_step(space):
   return out
 
 def print_space(space):
-  for l in space:
-    for c in l:
+  for i in range(len(space)):
+    for j in range(len(space)):
+      c = space[j][i]
       c_out = " O " if c.on else " - "
       print(c.color_code + c_out, end="")
     print(Colors['white'])
