@@ -1,17 +1,19 @@
 import sys, json
 from time import sleep
 
+Colors = {
+  'green': '\033[92m',
+  'yellow': '\033[93m',
+  'blue': '\033[94m',
+  'white': '\033[97m'
+}
+
 class Cell:
-  def __init__(self, on=0, d=0):
+  def __init__(self, on=0, d=0, color=None, color_code=None):
     self.on = on
     self.d = d
-
-def print_space(space):
-  for i,c in enumerate(space):
-    if i and not i%20: print()
-    c_out = " O " if c.on else " - "
-    print(c_out, end="")
-  print()
+    self.color = color
+    self.color_code = color_code or Colors.get(color) or Colors['white']
 
 def time_step(space):
   out = [None] * len(space)
@@ -23,6 +25,13 @@ def time_step(space):
       dest = dest - 20 if dest > len(space) else dest
       out[dest] = Cell(**c.__dict__)
   return out
+
+def print_space(space):
+  for i,c in enumerate(space):
+    if i and not i%20: print()
+    c_out = " O " if c.on else " - "
+    print(c.color_code + c_out, end="")
+  print()
 
 def animate(space):
   while(True):
