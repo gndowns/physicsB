@@ -20,6 +20,32 @@ class Cell:
     self.color_code = color_code or Colors.get(color) or Colors['white']
     self.nbhds = nbhds if nbhds else []
 
+def flush_space(particles, n):
+  for i in range(n):
+    for j in range(n):
+      print(" - ", end="")
+    print()
+
+def move_cursor(x, d):
+  if x: print('\033[{}{}'.format(x, d), end='')
+
+def publish_particles(particles):
+  for p in particles.values():
+    # set cursor to particle position
+    move_cursor((3 * p.x) + 1, "C")
+    move_cursor(p.y + 1, "A")
+    print(p.color_code + 'O', end='')
+    # reset cursor
+    move_cursor(p.y, "B")
+    print(Colors['white'])
+
+def publish_nbhd(x, y):
+  move_cursor((3 * x), "C")
+  move_cursor(y + 1, "A")
+  print(Colors['red'] + '\u25A1', end='')
+  move_cursor(y, 'B')
+  print(Colors['white'])
+
 def make_nbhds(particles, n):
   nbhds = {}
   for coords,p in particles.items():
@@ -31,12 +57,7 @@ def make_nbhds(particles, n):
     if not nbhds.get(key):
       nbhds[key] = []
     nbhds[key].append(coords)
-
-def flush_space(particles, n):
-  for i in range(n):
-    for j in range(n):
-      print(" - ", end="")
-    print()
+    publish_nbhd(int(x), int(y))
 
 def time_step(particles, n):
   nbhds = make_nbhds(particles, n)
@@ -45,24 +66,12 @@ def time_step(particles, n):
   #  return fulfill_nbhds(space)
   return True
 
-def move_cursor(x, d):
-  if x: print('\033[{}{}'.format(x, d), end='')
-
-def publish_particles(particles):
-  for p in particles.values():
-    # set cursor
-    move_cursor((3 * p.x) + 1, "C")
-    move_cursor(p.y + 1, "A")
-    print(p.color_code + 'O', end='')
-    # reset cursor
-    move_cursor(p.y, "B")
-    print(Colors['white'])
-
 def animate(particles, n):
   flush_space(particles, n)
   publish_particles(particles)
   while(True):
-    None
+    sleep(0.5)
+    time_step(particles, n)
 
 conf = json.load(open(sys.argv[1]))
 particles = {}
