@@ -46,17 +46,17 @@ def time_step(particles, n):
   return True
 
 def move_cursor(x, d):
-  print('\033[{}{}'.format(x, d), end='')
+  print('\033[{}{}'.format(x, d), end='') if x else None
 
 def publish_particles(particles):
   for p in particles.values():
     # set cursor
-    move_cursor(p.x + 1, "A")
-    move_cursor(p.y + 1, "C")
+    move_cursor((3 * p.x) + 1, "C")
+    move_cursor(p.y + 1, "A")
     print(p.color_code + 'O', end='')
     # reset cursor
-    move_cursor(p.x, "B")
-    move_cursor(p.y, "D")
+    move_cursor((3 * p.x), "D")
+    move_cursor(p.y, "B")
     print(Colors['white'])
 
 def animate(particles, n):
