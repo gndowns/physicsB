@@ -10,10 +10,8 @@ Colors = {
 }
 
 class Cell:
-  def __init__(self, x, y, dx=0, dy=0,
+  def __init__(self, dx=0, dy=0,
     color=None, nbhds=None):
-    self.x = x
-    self.y = y
     self.dx = dx
     self.dy = dy
     self.color = color
@@ -37,8 +35,9 @@ def printc(x, y, char, color, offset=0):
   print(Colors['white'])
 
 def publish_particles(particles):
-  for p in particles.values():
-    printc(p.x, p.y, 'O', p.color)
+  for key, p in particles.items():
+    x,y = [int(z) for z in key.split()]
+    printc(x, y, 'O', p.color)
 
 def publish_nbhd(x, y):
   # unicode box
@@ -71,7 +70,6 @@ def fulfill_nbhds(particles, nbhds):
   for dest,l in nbhds.items():
     for p_coords in l:
       p = particles[p_coords]
-      p.x, p.y = [int(z) for z in dest.split()]
       out[dest] = p
   return out
 
