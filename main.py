@@ -68,15 +68,11 @@ def flush_space(particles, n):
     print()
 
 def animate(particles, n):
-  while(True):
-    flush_space(particles, n)
-    sleep(0.5)
-    print("\033[21A\r")
+  flush_space(particles, n)
 
 conf = json.load(open(sys.argv[1]))
 particles = {}
 for key, val in conf.items():
-  i, j = [int(x) for x in key.split(", ")]
-  particles[' '.join([str(i), str(j)])] = Cell(**val)
+  particles[key] = Cell(**val)
 
 animate(particles, 20)
