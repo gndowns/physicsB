@@ -22,7 +22,7 @@ class Cell:
 def flush_space(particles, n):
   for i in range(n):
     for j in range(n):
-      print(" - ", end="")
+      print(' - ', end='')
     print()
 
 def move_cursor(x, d):
@@ -61,31 +61,39 @@ def make_nbhds(particles, n):
     publish_nbhd(int(x), int(y))
   return nbhds
 
-def flush_nbhds(nbhds):
-  for key in nbhds.keys():
+def flush_obj(objs, res, offset=0):
+  for key in objs.keys():
     x,y = [int(z) for z in key.split()]
-    printc(x, y, ' ', 'white', offset=-1)
+    printc(x, y, res, 'white', offset=offset)
+
+def fulfill_nbhds(particles, nbhds):
+  out = {}
+  for dest,l in nbhds.items():
+    for p_coords in l:
+      p = particles[p_coords]
+      p.x, p.y = [int(z) for z in dest.split()]
+      out[dest] = p
+  return out
 
 def time_step(particles, n):
   # generates and publishes nbhds
   nbhds = make_nbhds(particles, n)
 
-  #  detect_collisions(particles, nbhds, n)
-
   sleep(0.75)
 
-  # clear nbhds from board
-  flush_nbhds(nbhds)
+  # clear nbhds and particles from board
+  flush_obj(nbhds, ' ', offset=-1)
+  flush_obj(particles, '-')
 
-  #  return fulfill_nbhds(space)
-  return particles
+  # advance particles
+  return fulfill_nbhds(particles, nbhds)
 
 def animate(particles, n):
   flush_space(particles, n)
   while(True):
     publish_particles(particles)
     sleep(0.75)
-    space = time_step(particles, n)
+    particles = time_step(particles, n)
 
 conf = json.load(open(sys.argv[1]))
 particles = {}
