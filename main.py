@@ -46,6 +46,8 @@ def publish_nbhd(x, y):
   printc(x, y, '\u25A1', 'red', offset=-1)
 
 def make_nbhds(particles, n):
+  # nbhds maps its own location to a list of
+  # coordinates of each owner of the nbhd
   nbhds = {}
   for coords,p in particles.items():
     i,j = [int(x) for x in coords.split(' ')]
@@ -57,6 +59,12 @@ def make_nbhds(particles, n):
       nbhds[key] = []
     nbhds[key].append(coords)
     publish_nbhd(int(x), int(y))
+  return nbhds
+
+def flush_nbhds(nbhds):
+  for key in nbhds.keys():
+    x,y = [int(z) for z in key.split()]
+    printc(x, y, ' ', 'white', offset=-1)
 
 def time_step(particles, n):
   # generates and publishes nbhds
@@ -64,18 +72,20 @@ def time_step(particles, n):
 
   #  detect_collisions(particles, nbhds, n)
 
+  sleep(0.75)
+
   # clear nbhds from board
-  #  flush_nbhds(nbhds, n)
+  flush_nbhds(nbhds)
 
   #  return fulfill_nbhds(space)
-  return True
+  return particles
 
 def animate(particles, n):
   flush_space(particles, n)
-  publish_particles(particles)
   while(True):
-    sleep(0.5)
-    time_step(particles, n)
+    publish_particles(particles)
+    sleep(0.75)
+    space = time_step(particles, n)
 
 conf = json.load(open(sys.argv[1]))
 particles = {}
