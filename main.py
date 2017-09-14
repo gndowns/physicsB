@@ -11,13 +11,12 @@ Colors = {
 
 class Cell:
   def __init__(self, x, y, dx=0, dy=0,
-    color=None, color_code=None, nbhds=None):
+    color=None, nbhds=None):
     self.x = x
     self.y = y
     self.dx = dx
     self.dy = dy
     self.color = color
-    self.color_code = color_code or Colors.get(color) or Colors['white']
     self.nbhds = nbhds if nbhds else []
 
 def flush_space(particles, n):
@@ -29,22 +28,22 @@ def flush_space(particles, n):
 def move_cursor(x, d):
   if x: print('\033[{}{}'.format(x, d), end='')
 
-def publish_particles(particles):
-  for p in particles.values():
-    # set cursor to particle position
-    move_cursor((3 * p.x) + 1, "C")
-    move_cursor(p.y + 1, "A")
-    print(p.color_code + 'O', end='')
-    # reset cursor
-    move_cursor(p.y, "B")
-    print(Colors['white'])
-
-def publish_nbhd(x, y):
-  move_cursor((3 * x), "C")
-  move_cursor(y + 1, "A")
-  print(Colors['red'] + '\u25A1', end='')
+def printc(x, y, char, color, offset=0):
+  move_cursor((3*x) + 1 + offset, 'C')
+  move_cursor(y + 1, 'A')
+  print(Colors[color] + char, end='')
+  # reset cursor
   move_cursor(y, 'B')
   print(Colors['white'])
+
+def publish_particles(particles):
+  for p in particles.values():
+    printc(p.x, p.y, 'O', p.color)
+
+def publish_nbhd(x, y):
+  # unicode box
+  # offest so not directly on top of particles
+  printc(x, y, '\u25A1', 'red', offset=-1)
 
 def make_nbhds(particles, n):
   nbhds = {}
@@ -60,8 +59,13 @@ def make_nbhds(particles, n):
     publish_nbhd(int(x), int(y))
 
 def time_step(particles, n):
+  # generates and publishes nbhds
   nbhds = make_nbhds(particles, n)
-  #  detect_collisions(space)
+
+  #  detect_collisions(particles, nbhds, n)
+
+  # clear nbhds from board
+  #  flush_nbhds(nbhds, n)
 
   #  return fulfill_nbhds(space)
   return True
