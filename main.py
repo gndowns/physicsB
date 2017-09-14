@@ -46,7 +46,7 @@ def time_step(particles, n):
   return True
 
 def move_cursor(x, d):
-  print('\033[{}{}'.format(x, d), end='') if x else None
+  if x: print('\033[{}{}'.format(x, d), end='')
 
 def publish_particles(particles):
   for p in particles.values():
@@ -62,6 +62,8 @@ def publish_particles(particles):
 def animate(particles, n):
   flush_space(particles, n)
   publish_particles(particles)
+  while(True):
+    None
 
 conf = json.load(open(sys.argv[1]))
 particles = {}
