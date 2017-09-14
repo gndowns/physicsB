@@ -55,7 +55,6 @@ def publish_particles(particles):
     move_cursor(p.y + 1, "A")
     print(p.color_code + 'O', end='')
     # reset cursor
-    move_cursor((3 * p.x), "D")
     move_cursor(p.y, "B")
     print(Colors['white'])
 
