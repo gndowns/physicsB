@@ -61,26 +61,22 @@ def make_nbhds(space):
         dest_y = max(min(j + c.dy, len(space) - 1), 0)
         space[dest_x][dest_y].nbhds.append([dest_x, dest_y])
 
-def print_space(space):
-  for i in range(len(space)):
-    for j in range(len(space)):
-      c = space[j][i]
-      c_out = " O " if c.on else " - "
-      #  color_code = c.color_code if c.nbhds else Colors["red"]
-      print(c.color_code + c_out, end="")
-  print(Colors['white'])
+def flush_space(particles, n):
+  for i in range(n):
+    for j in range(n):
+      print(" - ", end="")
+    print()
 
-def animate(space):
+def animate(particles, n):
   while(True):
-    print_space(space)
-    space = time_step(space)
+    flush_space(particles, n)
     sleep(0.5)
     print("\033[21A\r")
 
 conf = json.load(open(sys.argv[1]))
-space = [[Cell() for _ in range(20)] for _ in range(20)]
+particles = {}
 for key, val in conf.items():
   i, j = [int(x) for x in key.split(", ")]
-  space[i][j] = Cell(**val)
+  particles[' '.join([str(i), str(j)])] = Cell(**val)
 
-animate(space)
+animate(particles, 20)
