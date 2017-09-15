@@ -18,8 +18,8 @@ class Cell:
     self.nbhds = nbhds if nbhds else []
 
 def flush_space(particles, n):
-  for i in range(n):
-    for j in range(n):
+  for _ in range(n):
+    for _ in range(n):
       print(' - ', end='')
     print()
 
@@ -73,6 +73,16 @@ def fulfill_nbhds(particles, nbhds):
       out[dest] = p
   return out
 
+def detect_collisions(particles, nbhds):
+  for nbhd in nbhds.values():
+    if len(nbhd) > 1:
+      handle_collision(particles, nbhd)
+
+def handle_collision(particles, nbhd):
+  for coords in nbhd:
+    p = particles[coords]
+    p.color = "green"
+
 def time_step(particles, n):
   # generates and publishes nbhds
   nbhds = make_nbhds(particles, n)
@@ -82,6 +92,8 @@ def time_step(particles, n):
   # clear nbhds and particles from board
   flush_obj(nbhds, ' ', offset=-1)
   flush_obj(particles, '-')
+
+  detect_collisions(particles, nbhds)
 
   # advance particles
   return fulfill_nbhds(particles, nbhds)
