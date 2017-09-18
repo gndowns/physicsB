@@ -17,6 +17,9 @@ class Cell:
     self.color = color
     self.nbhds = nbhds if nbhds else []
 
+  def copy(self):
+    return Cell(**self.__dict__)
+
 def flush_space(particles, n):
   for _ in range(n):
     for _ in range(n):
@@ -79,22 +82,33 @@ def detect_collisions(particles, nbhds):
       handle_collision(particles, nbhd)
 
 def handle_collision(particles, nbhd):
+  original_particles = {}
   for coords in nbhd:
-    p = particles[coords]
-    p.color = "green"
+    original_particles[coords] = particles[coords].copy()
+
+  for p_coords in nbhd:
+    p = particles[p_coords]
+    for q_coords in nbhd:
+      if q_coords != p_coords:
+        q = original_particles[q_coords]
+        p.dx = q.dx
+        p.dy = q.dy
 
 def time_step(particles, n):
-  # generates and publishes nbhds
+  sleep(0.5)
+
   nbhds = make_nbhds(particles, n)
 
-  sleep(0.75)
-
-  # clear nbhds and particles from board
-  flush_obj(nbhds, ' ', offset=-1)
-  flush_obj(particles, '-')
+  sleep(0.5)
 
   detect_collisions(particles, nbhds)
+  flush_obj(nbhds, ' ', offset=-1)
+  nbhds = make_nbhds(particles, n)
 
+  sleep(0.25)
+
+  flush_obj(nbhds, ' ', offset=-1)
+  flush_obj(particles, '-')
   # advance particles
   return fulfill_nbhds(particles, nbhds)
 
@@ -102,7 +116,6 @@ def animate(particles, n):
   flush_space(particles, n)
   while(True):
     publish_particles(particles)
-    sleep(0.75)
     particles = time_step(particles, n)
 
 conf = json.load(open(sys.argv[1]))
